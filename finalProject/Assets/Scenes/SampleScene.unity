@@ -559,7 +559,7 @@ MonoBehaviour:
   RainDropSpawner: 200
   RainDropCount: {fileID: 707365456}
   follower_mat: {fileID: 2100000, guid: 80072289e73922d4fb9606f2171857f4, type: 2}
-  rain_mat: {fileID: 2100000, guid: db96e04f47f6c2a44bc6bb90f93602ec, type: 2}
+  rain_mat: {fileID: 2100000, guid: 0d1508aeea6e1ee44bedc4683419bb46, type: 2}
   rainGod_mat: {fileID: 2100000, guid: 4cac6c2aa1a2e7e42adc553f43c3ea63, type: 2}
   follower_mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   rain_mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}

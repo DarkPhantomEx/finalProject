@@ -8,6 +8,7 @@ using Unity.Transforms;
 
 public class findWaypoint_System : ComponentSystem
 {
+    //Highpriest uses this system to obtain the locationcomponent of the closest waypoint
     protected override void OnUpdate()
     {
         Entities.WithNone<foundWaypoint>().WithAll<highpriest_tag>().ForEach((Entity H, ref Translation highPriestTranslation) =>

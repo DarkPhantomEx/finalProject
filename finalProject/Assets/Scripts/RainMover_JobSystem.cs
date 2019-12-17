@@ -34,8 +34,8 @@ public class RainMover_JobSystem : JobComponentSystem
             // that want to read Rotation component data.
             // For example,
             //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
-            translation.Value.y -= moveSpeed.rainMoveSpeed * deltaTime;
-            pid.particle_ID = 13;
+            translation.Value.y -= moveSpeed.rainMoveSpeed * deltaTime; //Makes "Rainfall" occur
+            pid.particle_ID = 13; //Sets raindrops particle ID to 13 (for the lulz)
             
             
         }
@@ -48,7 +48,7 @@ public class RainMover_JobSystem : JobComponentSystem
         // Assign values to the fields on your job here, so that it has
         // everything it needs to do its work when it runs later.
         // For example,
-        job.deltaTime = UnityEngine.Time.deltaTime;
+        job.deltaTime = UnityEngine.Time.deltaTime; 
         
         
         

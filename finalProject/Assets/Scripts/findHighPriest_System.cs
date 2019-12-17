@@ -8,6 +8,7 @@ using Unity.Transforms;
 
 public class findHighPriest_System : ComponentSystem
 {
+    //Used by the followers to search for the High Priest and obtain a component that keeps track of it's location
     protected override void OnUpdate()
     {
         Entities.WithNone<foundHighPriest>().WithAll<follower_tag>().ForEach((Entity F, ref Translation followerTranslation) =>

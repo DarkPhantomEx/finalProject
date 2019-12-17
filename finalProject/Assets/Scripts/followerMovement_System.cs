@@ -8,7 +8,7 @@ using Unity.Transforms;
 
 public class followerMovement_System : ComponentSystem
 {
-    protected override void OnUpdate()
+    protected override void OnUpdate() //Checks on the distance between the Follower and the High priest and follows him
     {
         Entities.ForEach((Entity F, ref foundHighPriest foundPriest, ref Translation followerPOS, ref followerMoveSpeed_Component Speed) =>
         {

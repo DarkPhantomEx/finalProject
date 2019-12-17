@@ -11,11 +11,13 @@ using UnityEngine.UI;
 
 public class rainMain : MonoBehaviour
 {
+    //Keeps count of total number of Raindrop entities spawned
     public int RainDropSpawner = 200;
 
     public Text RainDropCount;
     int numberOfDrops = 0;
 
+    //Materials and Meshes used in-game.
     [SerializeField]
     private Material follower_mat;
     [SerializeField]
@@ -49,27 +51,31 @@ public class rainMain : MonoBehaviour
 
     private static EntityManager entityManager;
 
+    //Start - Generates Terrain
     private void Start()
     {
 
         entityManager = World.Active.EntityManager;
-        SpawnLand();
-        CreateWaypoints();
+        SpawnLand(); //Spawns base surface
+        CreateWaypoints(); //Spawns invisible waypoints for the "HighPriest" to follow
 
         for (int i =0; i<50; i++)
-        TreeGen();
-        SpawnRainGod();        
-        SpawnFollowers();
-        SpawnHighPriest();
+        TreeGen(); //Generates 50 trees at random locations
+        SpawnRainGod(); //Spawns the Rain God (a.k.a Snowman) 
+        SpawnFollowers(); //Spawns the Followers that follow the High Priest
+        SpawnHighPriest(); //Spawns the HighPriest
 
     }
 
     private void Update()
     {
+        //Spawns rain if Spacebar is pressed
         if(Input.GetKeyDown(KeyCode.Space))
         {
             SpawnRain();
         }
+        
+        //The below conditions respawn the base land, if the Raindropcount reaches the number mentioned
         if(numberOfDrops > 10000)
         {
             SpawnLand();
@@ -83,27 +89,31 @@ public class rainMain : MonoBehaviour
             SpawnLand();
         }
     }
-
-
+    
    
     private void SpawnLand()
     {
+        //Creates Land Entity
         Entity land = entityManager.CreateEntity(
             typeof(Translation),
             typeof(NonUniformScale),
             typeof(RenderMesh),
             typeof(LocalToWorld));
+        //Spawns base "barren" land
         if (numberOfDrops < 10000)
         {
+            //Sets Translation
             entityManager.SetComponentData(land, new Translation
             {
                 Value = float3.zero
             });
 
+            //Sets Scale
             entityManager.SetComponentData(land, new NonUniformScale
             {
                 Value = new float3(90, 1, 90)
             });
+            //Sets Material and Mesh to be rendered onto the Entity
             entityManager.SetSharedComponentData(land, new RenderMesh
             {
                 material = land_mat,
@@ -111,36 +121,48 @@ public class rainMain : MonoBehaviour
             });
         }
         else
+        //Spawns base "green" land
         if(numberOfDrops >=20000)
         {
+            //Sets Scale
             entityManager.SetComponentData(land, new NonUniformScale
             {
                 Value = new float3(90, 4f, 90)
             });
+
+            //Sets Material and Mesh to be rendered onto the Entity
             entityManager.SetSharedComponentData(land, new RenderMesh
             {
                 material = floodland_mat,
                 mesh = land_mesh
             });
         }else    
+        //Spawns base "wet land"
         if(numberOfDrops >= 15000)
         {
+            //Sets Scale
             entityManager.SetComponentData(land, new NonUniformScale
             {
                 Value = new float3(90, 1.2f, 90)
             });
+
+            //Sets Material and Mesh to be rendered onto the Entity
             entityManager.SetSharedComponentData(land, new RenderMesh
             {
                 material = darkerland_mat,
                 mesh = land_mesh
             });
         }else
+        //Spawns "flood"
         if(numberOfDrops >= 10000)
         {
+            //Sets Scale
             entityManager.SetComponentData(land, new NonUniformScale
             {
                 Value = new float3(90, 1.1f, 90)
             });
+
+            //Sets Material and Mesh to be rendered onto the Entity
             entityManager.SetSharedComponentData(land, new RenderMesh
             {
                 material = wetland_mat,
@@ -150,7 +172,7 @@ public class rainMain : MonoBehaviour
     }
     private void SpawnRainGod()
     {
-        //RainGod Creation
+        //Creating Entity
         Entity RainGod = entityManager.CreateEntity(
             typeof(Translation),
             typeof(raingod_tag),
@@ -179,6 +201,7 @@ public class rainMain : MonoBehaviour
     }
     private void SpawnHighPriest()
     {
+        //Creating Entity
         Entity HighPriest = entityManager.CreateEntity(
             typeof(highpriest_tag),
             typeof(waypointCount_Component),
@@ -214,31 +237,32 @@ public class rainMain : MonoBehaviour
             typeof(RenderMesh),
             typeof(LocalToWorld)
             );
-
+        
+        //Creating Native Array to contain the various followers
         NativeArray<Entity> followerContainer = new NativeArray<Entity>(10, Allocator.Temp);
         entityManager.CreateEntity(Follower, followerContainer);
 
         //Spawn point for the various followers
         float3[] fSpawn = new float3[4] { new float3(10, 1.5f, 0), new float3(0, 1.5f, 4), new float3(-4, 1.5f, 0), new float3(0, 1.5f, -4) };
 
-
+        //Setting the various Components of the Followers
         for (int i = 0; i < followerContainer.Length; i++)
         {
             Entity E = followerContainer[i];
-            entityManager.SetComponentData(E, new Translation { Value = fSpawn[i % 4] });
-            entityManager.SetComponentData(E, new followerMoveSpeed_Component
+            entityManager.SetComponentData(E, new Translation { Value = fSpawn[i % 4] }); //Translation
+            entityManager.SetComponentData(E, new followerMoveSpeed_Component //Setting Random movespeed for the various followers
             {
                 MoveSpeed = UnityEngine.Random.Range(3f, 10f)
             });
 
-            entityManager.SetSharedComponentData(E, new RenderMesh
+            entityManager.SetSharedComponentData(E, new RenderMesh //Setting Mesh and Material of the followers
             {
                 material = follower_mat,
                 mesh = follower_mesh
             });
 
         }
-        followerContainer.Dispose();
+        followerContainer.Dispose(); //Disposing the Nativearray/container
     }
     private void SpawnRain()
     {
@@ -253,19 +277,20 @@ public class rainMain : MonoBehaviour
             typeof(LocalToWorld)
             );
 
+        //Creating NativeArray / Container
         NativeArray<Entity> rainContainer = new NativeArray<Entity>(RainDropSpawner, Allocator.Temp);
         entityManager.CreateEntity(Rain, rainContainer);
 
+        //Setting Components for each RainDrop
         for (int i = 0; i < rainContainer.Length; i++)
         {
             Entity E = rainContainer[i];
-            entityManager.SetComponentData(E, new rainParticle_Component
+            entityManager.SetComponentData(E, new rainParticle_Component //Just a particle/drop ID number
             {
-                particle_ID = i + 1,
-                movespeed = 4f
+                particle_ID = i + 1
             });
             entityManager.SetComponentData(E, new Translation { Value = new float3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(22f, 30f), UnityEngine.Random.Range(-20f, 20f)) });
-            entityManager.SetComponentData(E, new rainSpeed_Component { rainMoveSpeed = UnityEngine.Random.Range(1.0f, 7.5f) });
+            entityManager.SetComponentData(E, new rainSpeed_Component { rainMoveSpeed = UnityEngine.Random.Range(1.0f, 7.5f) }); //Raindrop rainfall speed
             entityManager.SetComponentData(E, new NonUniformScale
             {
                 Value = new float3(.1f, .15f, .1f)
@@ -278,6 +303,7 @@ public class rainMain : MonoBehaviour
         }
         rainContainer.Dispose();
 
+        //Increments the Raindrop counter
         numberOfDrops += RainDropSpawner;
         RainDropCount.text = numberOfDrops.ToString();
     }    
@@ -297,6 +323,7 @@ public class rainMain : MonoBehaviour
         float3[] wayPoints = new float3[8] { new float3(4, 1.5f, 4), new float3(-4, 1.5f, 4), new float3(-4, 1.5f, -4), new float3(4, 1.5f, -4),
             new float3 (40, 1.5f, -4), new float3(0, 1.5f, -20), new float3(-50, 1.5f, -10), new float3(60,1.5f,0) };
 
+        //Generates Invisible waypoints for the HighPriest to follow
         for (int i = 0; i < waypointContainer.Length; i++)
         {
 
@@ -320,6 +347,7 @@ public class rainMain : MonoBehaviour
              typeof(RenderMesh),
              typeof(LocalToWorld)
              );
+        //Using Random to generate trees in different sections of the map
         if (UnityEngine.Random.value % 2 == 0)
         {
             entityManager.SetComponentData(E, new Translation
