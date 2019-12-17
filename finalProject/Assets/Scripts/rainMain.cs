@@ -6,8 +6,16 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections;
 using Unity.Rendering;
+using UnityEngine.UI;
+
+
 public class rainMain : MonoBehaviour
 {
+    public int RainDropSpawner = 200;
+
+    public Text RainDropCount;
+    int numberOfDrops = 0;
+
     [SerializeField]
     private Material follower_mat;
     [SerializeField]
@@ -28,6 +36,10 @@ public class rainMain : MonoBehaviour
     private Mesh tree_mesh;
     [SerializeField]
     private Material tree_mat;
+    [SerializeField]
+    private Material land_mat;
+    [SerializeField]
+    private Mesh land_mesh;
 
     private static EntityManager entityManager;
 
@@ -35,34 +47,77 @@ public class rainMain : MonoBehaviour
     {
 
         entityManager = World.Active.EntityManager;
+        SpawnLand();
         CreateWaypoints();
-        //Archetypes
 
-        //RainParticle Archetype
-        EntityArchetype Rain = entityManager.CreateArchetype(
-            typeof(rainParticle_Component),
-            typeof(rain_tag),
+        for (int i =0; i<30; i++)
+        TreeGen();
+        SpawnRainGod();        
+        SpawnFollowers();
+        SpawnHighPriest();
+
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            SpawnRain();
+        }
+    }
+    private void SpawnLand()
+    {
+        Entity land = entityManager.CreateEntity(
             typeof(Translation),
             typeof(NonUniformScale),
             typeof(RenderMesh),
-            typeof(LocalToWorld)
-            );
-        //WayPoint Archetype
-        //EntityArchetype WayPoint = entityManager.CreateArchetype(
-        //    typeof(waypoint_tag),
-        //    typeof(Translation),
-        //    typeof(RenderMesh),
-        //    typeof(LocalToWorld)
-        //    );
+            typeof(LocalToWorld));
 
-        //Follower Archetype
-        EntityArchetype Follower = entityManager.CreateArchetype(
-            typeof(follower_tag),
+        entityManager.SetComponentData(land, new Translation
+        {
+            Value = float3.zero
+        });
+
+        entityManager.SetComponentData(land, new NonUniformScale
+        {
+            Value = new float3(90, 1, 90)
+        });
+        entityManager.SetSharedComponentData(land, new RenderMesh
+        {
+            material = land_mat,
+            mesh = land_mesh
+        });
+    }
+    private void SpawnRainGod()
+    {
+        //RainGod Creation
+        Entity RainGod = entityManager.CreateEntity(
             typeof(Translation),
+            typeof(NonUniformScale),
+            typeof(Rotation),
             typeof(RenderMesh),
             typeof(LocalToWorld)
-            );
-        //Individual Entity Creation
+           );
+
+        //Setting GodSpawn
+        entityManager.SetComponentData(RainGod, new Translation
+        {
+            Value = new float3(0f, 0f, 0f)
+        });
+        //Scaling
+        entityManager.SetComponentData(RainGod, new NonUniformScale
+        {
+            Value = new float3(2, 2, 2)
+        });
+        //Setting RainGod Mesh
+        entityManager.SetSharedComponentData(RainGod, new RenderMesh
+        {
+            material = rainGod_mat,
+            mesh = rainGod_mesh
+        });
+    }
+    private void SpawnHighPriest()
+    {
         Entity HighPriest = entityManager.CreateEntity(
             typeof(highpriest_tag),
             typeof(waypointCount_Component),
@@ -71,20 +126,11 @@ public class rainMain : MonoBehaviour
             typeof(RenderMesh),
             typeof(LocalToWorld)
            );
-
-        //RainGod Creation
-        Entity RainGod = entityManager.CreateEntity( 
-            typeof(Translation), 
-            typeof(Rotation),
-            typeof(RenderMesh), 
-            typeof(LocalToWorld)
-           );
-
         //Setting HighPriest
         entityManager.SetComponentData(HighPriest, new Translation
         {
-            Value = new float3(4 , 1.5f, 0f)
-        });
+            Value = new float3(4, 1.5f, 0f)
+        });        
         //Mesh&Mat
         entityManager.SetSharedComponentData(HighPriest, new RenderMesh
         {
@@ -96,26 +142,52 @@ public class rainMain : MonoBehaviour
         {
             waypointcount = 0
         });
+    }
+    private void SpawnFollowers()
+    {
+        //Follower Archetype
+        EntityArchetype Follower = entityManager.CreateArchetype(
+            typeof(follower_tag),
+            typeof(Translation),
+            typeof(RenderMesh),
+            typeof(LocalToWorld)
+            );
 
-        //Setting GodSpawn
-        entityManager.SetComponentData(RainGod, new Translation
-        {
-            Value = new float3(0f, 0f, 0f)
-        });
-        //Setting RainGod Mesh
-        entityManager.SetSharedComponentData(RainGod, new RenderMesh
-        {
-            material = rainGod_mat,
-            mesh = rainGod_mesh
-        });
-
-        //NativeArray Containers
-        NativeArray<Entity> rainContainer = new NativeArray<Entity>(2000, Allocator.Temp);
-        entityManager.CreateEntity(Rain, rainContainer);
-        //NativeArray<Entity> waypointContainer = new NativeArray<Entity>(4, Allocator.Temp);
-        //entityManager.CreateEntity(WayPoint, waypointContainer);
         NativeArray<Entity> followerContainer = new NativeArray<Entity>(10, Allocator.Temp);
         entityManager.CreateEntity(Follower, followerContainer);
+
+        //Spawn point for the various followers
+        float3[] fSpawn = new float3[4] { new float3(10, 1.5f, 0), new float3(0, 1.5f, 4), new float3(-4, 1.5f, 0), new float3(0, 1.5f, -4) };
+
+
+        for (int i = 0; i < followerContainer.Length; i++)
+        {
+            Entity E = followerContainer[i];
+            entityManager.SetComponentData(E, new Translation { Value = fSpawn[i % 4] });
+            entityManager.SetSharedComponentData(E, new RenderMesh
+            {
+                material = follower_mat,
+                mesh = follower_mesh
+            });
+
+        }
+        followerContainer.Dispose();
+    }
+    private void SpawnRain()
+    {
+        //RainParticle Archetype
+        EntityArchetype Rain = entityManager.CreateArchetype(
+            typeof(rainParticle_Component),
+            typeof(rain_tag),
+            typeof(rainSpeed_Component),
+            typeof(Translation),
+            typeof(NonUniformScale),
+            typeof(RenderMesh),
+            typeof(LocalToWorld)
+            );
+
+        NativeArray<Entity> rainContainer = new NativeArray<Entity>(RainDropSpawner, Allocator.Temp);
+        entityManager.CreateEntity(Rain, rainContainer);
 
         for (int i = 0; i < rainContainer.Length; i++)
         {
@@ -125,10 +197,11 @@ public class rainMain : MonoBehaviour
                 particle_ID = i + 1,
                 movespeed = 4f
             });
-            entityManager.SetComponentData(E, new Translation { Value = new float3(UnityEngine.Random.Range(-20f, 20f), 30f, UnityEngine.Random.Range(-20f, 20f)) });
+            entityManager.SetComponentData(E, new Translation { Value = new float3(UnityEngine.Random.Range(-20f, 20f), UnityEngine.Random.Range(22f, 30f), UnityEngine.Random.Range(-20f, 20f)) });
+            entityManager.SetComponentData(E, new rainSpeed_Component { rainMoveSpeed = UnityEngine.Random.Range(1.0f, 7.5f) });
             entityManager.SetComponentData(E, new NonUniformScale
             {
-                Value = new float3(.2f, .18f, .21f)
+                Value = new float3(.1f, .15f, .1f)
             });
             entityManager.SetSharedComponentData(E, new RenderMesh
             {
@@ -136,47 +209,11 @@ public class rainMain : MonoBehaviour
                 mesh = rain_mesh
             });
         }
+        rainContainer.Dispose();
 
-        ////Waypoint placement locations
-        //float3[] wayPoints = new float3[4] { new float3(4, 1.5f, 4), new float3(-4, 1.5f, 4), new float3(-4, 1.5f, -4), new float3(4, 1.5f, -4) };
-
-        //for (int i = 0; i < waypointContainer.Length; i++)
-        //{
-
-        //    Entity E = waypointContainer[i];            
-        //    entityManager.SetComponentData(E, new Translation { Value = wayPoints[i] });
-        //    entityManager.SetSharedComponentData(E, new RenderMesh
-        //    {
-        //        material = null,
-        //        mesh = null
-        //    });
-
-
-
-        //}
-
-        //Spawn point for the various followers
-        float3[] fSpawn = new float3[4] { new float3(10, 1.5f, 0), new float3(0, 1.5f, 4), new float3(-4, 1.5f, 0), new float3(0, 1.5f, -4) };
-
-
-        for (int i = 0; i < followerContainer.Length; i++)
-        {
-            Entity E = followerContainer[i];
-            entityManager.SetComponentData(E, new Translation { Value = fSpawn[i%4]});
-            entityManager.SetSharedComponentData(E, new RenderMesh
-            {
-                material = follower_mat,
-                mesh = follower_mesh
-            });
-
-        }
-        for(int i =0; i<30; i++)
-        TreeGen();
-        followerContainer.Dispose();
-        //rainContainer.Dispose();
-    }
-
-    //Create invisible waypoints for the Priest to follow
+        numberOfDrops += RainDropSpawner;
+        RainDropCount.text = numberOfDrops.ToString();
+    }    
     public void CreateWaypoints()
     {
         entityManager = World.Active.EntityManager;
@@ -207,9 +244,8 @@ public class rainMain : MonoBehaviour
 
 
         }
+        waypointContainer.Dispose();
     }
-
-    //Generate trees in the Overworld
     private void TreeGen()
     {
         Entity E = entityManager.CreateEntity(
