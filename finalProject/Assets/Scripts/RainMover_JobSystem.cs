@@ -22,9 +22,7 @@ public class RainMover_JobSystem : JobComponentSystem
     {
         // Add fields here that your job needs to do its work.
         // For example,
-        public float deltaTime;
-
-
+        public float deltaTime;        
 
         public void Execute(ref Translation translation, ref rainSpeed_Component moveSpeed, ref rainParticle_Component pid)
         {
@@ -38,6 +36,7 @@ public class RainMover_JobSystem : JobComponentSystem
             //     translation.Value += mul(rotation.Value, new float3(0, 0, 1)) * deltaTime;
             translation.Value.y -= moveSpeed.rainMoveSpeed * deltaTime;
             pid.particle_ID = 13;
+            
             
         }
     }

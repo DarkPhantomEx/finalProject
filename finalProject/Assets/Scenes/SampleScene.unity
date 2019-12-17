@@ -311,11 +311,26 @@ PrefabInstance:
     - target: {fileID: 8688587518125058450, guid: a36f80ebcf01a0543afd325ac23f4467,
         type: 3}
       propertyPath: m_FontData.m_FontSize
-      value: 14
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 8688587518125058450, guid: a36f80ebcf01a0543afd325ac23f4467,
         type: 3}
       propertyPath: m_FontData.m_MinSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8688587518125058450, guid: a36f80ebcf01a0543afd325ac23f4467,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8688587518125058450, guid: a36f80ebcf01a0543afd325ac23f4467,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8688587518125058450, guid: a36f80ebcf01a0543afd325ac23f4467,
+        type: 3}
+      propertyPath: m_Color.b
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -544,7 +559,7 @@ MonoBehaviour:
   RainDropSpawner: 200
   RainDropCount: {fileID: 707365456}
   follower_mat: {fileID: 2100000, guid: 80072289e73922d4fb9606f2171857f4, type: 2}
-  rain_mat: {fileID: 2100000, guid: 0d1508aeea6e1ee44bedc4683419bb46, type: 2}
+  rain_mat: {fileID: 2100000, guid: db96e04f47f6c2a44bc6bb90f93602ec, type: 2}
   rainGod_mat: {fileID: 2100000, guid: 4cac6c2aa1a2e7e42adc553f43c3ea63, type: 2}
   follower_mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   rain_mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
@@ -553,8 +568,11 @@ MonoBehaviour:
   highpriest_mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   tree_mesh: {fileID: 4300012, guid: 9fae9f7a7664c4c47a4fd4e9eedf6d6c, type: 3}
   tree_mat: {fileID: 2100000, guid: e2f44d83259a3c14abd33197677dbc91, type: 2}
-  land_mat: {fileID: 0}
-  land_mesh: {fileID: 0}
+  land_mat: {fileID: 2100000, guid: ca030f1a8877487408d9e0ba65b2ec80, type: 2}
+  land_mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  wetland_mat: {fileID: 2100000, guid: a60ce917eef7b0b40aec8da8172658a2, type: 2}
+  darkerland_mat: {fileID: 2100000, guid: 516e6f11e8de6624eb6be4bac8c14555, type: 2}
+  floodland_mat: {fileID: 2100000, guid: db96e04f47f6c2a44bc6bb90f93602ec, type: 2}
 --- !u!4 &1084391962
 Transform:
   m_ObjectHideFlags: 0
