@@ -54,7 +54,6 @@ public class rainMain : MonoBehaviour
     //Start - Generates Terrain
     private void Start()
     {
-
         entityManager = World.Active.EntityManager;
         SpawnLand(); //Spawns base surface
         CreateWaypoints(); //Spawns invisible waypoints for the "HighPriest" to follow
@@ -64,7 +63,6 @@ public class rainMain : MonoBehaviour
         SpawnRainGod(); //Spawns the Rain God (a.k.a Snowman) 
         SpawnFollowers(); //Spawns the Followers that follow the High Priest
         SpawnHighPriest(); //Spawns the HighPriest
-
     }
 
     private void Update()
